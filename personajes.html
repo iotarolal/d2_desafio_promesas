@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <h2>Ejemplos de Callbacks</h2>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script>
+
+    // Ej Guiado: Búsqueda de Usuarios
+    function buscarUsuario(id_usuario) {
+      let json_usuario;
+
+      if (id_usuario == 1) {
+        json_usuario = {id:1,name:'John',lastName: 'Doe',age: 24}
+      } else if (id_usuario == 2) {
+        json_usuario = {id: 2,name: 'Jane',lastName: 'Smith',age: 19}
+      } else {
+        json_usuario = 'ERROR!!!'
+      }
+      setTimeout(function () {
+        console.log(json_usuario);
+      }, 1500);
+    }
+
+    // Ej Búsqueda avanzada
+    function busquedaAvanzada(id_usuario) { // 17658624
+      const usuarios = [
+        {id: 2356256,name: 'Juan',lastName: 'Duran',age: 35},
+        {id: 27564512,name: 'Manuel',lastName: 'Perez',age: 31},
+        {id: 17658624,name: 'Jocelyn',lastName: 'Rodriguez',age: 30},
+        {id: 12345678,name: 'Maria',lastName: 'Garrido',age: 30}
+      ]
+      //const buscado = usuarios.find( obj => obj.id == id_usuario );
+      let buscado;
+      for (usuario of usuarios) {
+        if (usuario.id == id_usuario) {
+          buscado = usuario
+          break
+        }
+      }
+
+      setTimeout(function () {
+        console.log(buscado);
+      }, 1500)
+    }
+    
+    /*
+    // uso de la función "fetch", que está basada en promesas
+    fetch('https://pokeapi.co/api/v2/pokemon/76')  // Todavía está pendiente
+    .then( function (datos) { return datos.json() } )  // Se resolvió todo bien, ahora se desempaqueta la respuesta
+    .then ( function (datos)  { console.log(datos) } )
+    .catch( function (error) { console.log(error) } );  // ocurrió un error
+    */
+
+    function cargar_personaje(id) {
+      console.log('Empezando la función');
+      // CALLBACK HELL
+      $.get(`https://swapi.dev/api/people/${id}/`, function(personaje) {
+        $.get(personaje.homeworld, function(planeta) {    
+          console.log(`El personaje se llama ${personaje.name} y es del planeta ${planeta.name}`)
+        })
+      })
+
+      console.log('Terminando la función');
+    }
+
+    function cargar_personaje_fetch(id) {
+      let personaje;
+
+      fetch(`https://swapi.dev/api/people/${id}/`)
+      .then(datos => datos.json())
+      .then(function(data) {
+        personaje = data;
+        return fetch(personaje.homeworld);
+      })
+      .then(datos => datos.json())
+      .then(function(planeta) {
+        console.log(`El personaje se llama ${personaje.name} y es del planeta ${planeta.name}`)
+      })
+      .catch(error => console.log('Error en la llamada', error));
+    }
+
+    async function nuevo_cargar(id) {
+      const datos = await fetch(`https://swapi.dev/api/people/${id}/`)
+      const personaje = await datos.json()
+
+      const datos2 = await fetch(personaje.homeworld)
+      const planeta = await datos2.json()
+
+      console.log(`El personaje se llama ${personaje.name} y es del planeta ${planeta.name}`)
+    }
+
+  </script>
+</body>
+</html>
